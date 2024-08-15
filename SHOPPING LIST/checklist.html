@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Cart</title>
+    <style>
+        body {
+            background-color: #f0f0f0; /* Light background */
+            color: #333;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h2, h3 {
+            color: #ff0066; /* Neon Pink */
+        }
+
+        .add-item-form {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #e6e6e6; /* Light grey background */
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #00ccff; /* Neon Blue */
+            width: 80%;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 20%;
+            padding: 10px;
+            margin: 10px;
+            border: 2px solid #00ccff; /* Neon Blue */
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        button {
+            background-color: #ff0066; /* Neon Pink */
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 0px 10px #ff0066; /* Neon Pink */
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff3399; /* Darker Neon Pink */
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 20px #ff9933; /* Neon Orange */
+        }
+
+        th, td {
+            padding: 15px;
+            border: 1px solid #00ccff; /* Neon Blue */
+        }
+
+        th {
+            background-color: #e6e6e6; /* Light grey */
+            color: #00ccff; /* Neon Blue */
+        }
+
+        td {
+            background-color: #ffffff; /* White */
+            color: #333;
+        }
+
+        #total-amount {
+            font-size: 24px;
+            color: #ff9933; /* Neon Orange */
+            text-shadow: 0px 0px 10px #ff9933;
+        }
+
+        #pay-now {
+            background-color: #00ccff; /* Neon Blue */
+            color: #121212;
+            font-size: 20px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0px 0px 20px #00ccff;
+            transition: background-color 0.3s ease;
+        }
+
+        #pay-now:hover {
+            background-color: #33d9ff; /* Lighter Neon Blue */
+        }
+    </style>
+</head>
+<body>
+
+    <h2>What's In Your Cart?</h2>
+
+    <!-- Form to manually add pizza items -->
+    <div class="add-item-form">
+        <h3>Add Ingredients to Your Pizza</h3>
+        <input type="text" id="pizza-name" placeholder="Ingredient Name" required>
+        <input type="text" id="pizza-description" placeholder="Description" required>
+        <input type="number" id="pizza-price" placeholder="Price" required>
+        <input type="number" id="pizza-quantity" placeholder="Quantity" required>
+        <button onclick="addPizzaToCart()">Add to Cart</button>
+    </div>
+
+    <!-- Table to display cart items -->
+    <table id="cart-items">
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Items will be dynamically added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <h3>Total Amount: <span id="total-amount">0</span></h3>
+
+    <button id="pay-now">Pay Now</button>
+
+    <script>
+        let cart = [];
+
+        function updateCart() {
+            let cartTable = document.querySelector("#cart-items tbody");
+            cartTable.innerHTML = "";
+            let totalAmount = 0;
+
+            cart.forEach((item, index) => {
+                let row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.description}</td>
+                    <td>${item.price}</td>
+                    <td><input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)"></td>
+                    <td>${item.price * item.quantity}</td>
+                    <td><button onclick="removeItem(${index})">Remove</button></td>
+                </tr>`;
+                cartTable.innerHTML += row;
+                totalAmount += item.price * item.quantity;
+            });
+
+            document.getElementById("total-amount").innerText = totalAmount;
+        }
+
+        function addPizzaToCart() {
+            const name = document.getElementById("pizza-name").value;
+            const description = document.getElementById("pizza-description").value;
+            const price = parseFloat(document.getElementById("pizza-price").value);
+            const quantity = parseInt(document.getElementById("pizza-quantity").value);
+
+            if (name && description && !isNaN(price) && !isNaN(quantity) && quantity > 0) {
+                const newItem = {
+                    name,
+                    description,
+                    price,
+                    quantity
+                };
+
+                cart.push(newItem);
+                updateCart();
+
+                // Clear the input fields
+                document.getElementById("pizza-name").value = "";
+                document.getElementById("pizza-description").value = "";
+                document.getElementById("pizza-price").value = "";
+                document.getElementById("pizza-quantity").value = "";
+            } else {
+                alert("Please fill in all fields correctly.");
+            }
+        }
+
+        function updateQuantity(index, quantity) {
+            cart[index].quantity = parseInt(quantity);
+            updateCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        document.getElementById("pay-now").addEventListener("click", () => {
+            alert("Proceeding to payment");
+        });
+
+        updateCart();
+    </script>
+</body>
+</html>
